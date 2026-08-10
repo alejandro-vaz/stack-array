@@ -1,7 +1,7 @@
 [package]
 name = "stack-array"
 description = "A maximally-sized array stored on the stack"
-version = "1.2.1"
+version = "1.2.2"
 edition = "2024"
 rust-version = "1.99"
 categories = ["algorithms", "data-structures", "memory-management", "no-std"]
@@ -11,7 +11,7 @@ license = "MIT"
 authors = ["Alejandro Vaz <alejandro.vaz.myt@gmail.com>"]
 
 [lib]
-path = "./mod.rs"
+path = "./lib.rs"
 
 [[bench]]
 name = "stack-array"
