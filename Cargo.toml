@@ -1,0 +1,31 @@
+[package]
+name = "stack-array"
+description = "A maximum-sized array stored on the stack"
+version = "1.2.0"
+edition.workspace = true
+rust-version.workspace = true
+categories = ["algorithms", "data-structures", "memory-management", "no-std"]
+keywords = ["array", "stack", "stack-array", "collections"]
+homepage.workspace = true
+repository.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[lib]
+path = "./mod.rs"
+
+[[bench]]
+name = "stack-array"
+harness = false
+path = "benches.rs"
+
+[[test]]
+name = "stack-array"
+path = "tests.rs"
+
+[dependencies]
+constrangeiter = {workspace = true}
+
+[dev-dependencies]
+criterion = "0.8"
+arrayvec = "0.7.8"
