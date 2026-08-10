@@ -1,6 +1,6 @@
 # Array
 
-`Array<Type, N>` is an stack-allocated vector of maximum capacity `N`, but not restricted to having an exact amount of elements as `[_; N]`.
+`Array<Type, N>` is an stack-allocated vector of maximum capacity `N`, but not restricted to having an exact amount of elements as `[Type; N]`.
 
 ## Usage
 
