@@ -91,7 +91,10 @@ impl<Type, const N: usize> Array<Type, N> {
     pub const fn len(&self) -> usize {return self.length}
     pub const fn new() -> Self {return Self::default()}
     pub const fn is_full(&self) -> bool {return self.length == N}
-    pub const fn repeat<const TIMES: usize>(self) -> Array<Type, {TIMES * N}> where Type: [const] Clone + [const] Destruct, [(); TIMES * N]: {
+    pub const fn repeat<const TIMES: usize>(self) -> Array<
+        Type, 
+        {TIMES * N}
+    > where Type: [const] Clone + [const] Destruct, [(); TIMES * N]: {
         let (length, mut data) = self.into();
         let mut additional = MaybeUninit::<[Type; TIMES * N]>::uninit().transpose();
         if TIMES == 0 {for index in (0..length).const_into_iter() {
@@ -110,7 +113,9 @@ impl<Type, const N: usize> Array<Type, N> {
         }
         return Array::from((length * TIMES, additional));
     }
-    pub const fn resize<const M: usize>(self) -> Array<Type, M> where Type: [const] Destruct {
+    pub const fn resize<const M: usize>(
+        self
+    ) -> Array<Type, M> where Type: [const] Destruct {
         let (length, mut data) = self.into();
         let mut additional = MaybeUninit::<[Type; M]>::uninit().transpose();
         return if M >= length {
@@ -157,9 +162,11 @@ impl<Type, const N: usize> Array<Type, N> {
             data: together
         }
     }
+    #[track_caller]
     pub const fn push(&mut self, value: Type) -> () {
         self.push_mut(value);
     }
+    #[track_caller]
     pub const fn push_mut<'valid>(&'valid mut self, value: Type) -> &'valid mut Type {
         let reference = self.data[self.length].write(value);
         self.length += 1;
@@ -180,9 +187,11 @@ impl<Type, const N: usize> Array<Type, N> {
         }
         self.length = length;
     }
+    #[track_caller]
     pub const fn insert(&mut self, index: usize, value: Type) -> () {
         self.insert_mut(index, value);
     }
+    #[track_caller]
     pub const fn insert_mut<'valid>(
         &'valid mut self, 
         index: usize, 
@@ -200,6 +209,7 @@ impl<Type, const N: usize> Array<Type, N> {
         self.length += 1;
         return reference;
     }
+    #[track_caller]
     pub const fn remove(&mut self, index: usize) -> Type {
         assert!(index < self.length, "tried to remove out of bounds");
         let value = unsafe {self.data.get_unchecked(index).assume_init_read()};
@@ -212,6 +222,7 @@ impl<Type, const N: usize> Array<Type, N> {
         self.length -= 1;
         return value;
     }
+    #[track_caller]
     pub const fn swap_remove(&mut self, index: usize) -> Type {
         assert!(index < self.length - 1, "tried to remove out of bounds");
         let value = unsafe {self.data[index].assume_init_read()};
@@ -356,7 +367,7 @@ const impl<Type: [const] Destruct, const N: usize> Drop for Array<Type, N> {
 //> ARRAY -> DEBUG
 impl<Type: Debug, const N: usize> Debug for Array<Type, N> {
     fn fmt(&self, formatter: &mut Formatter<'_>) -> Format {
-        return Debug::fmt(self.as_ref(), formatter);
+        return self.as_ref().fmt(formatter);
     }
 }
 
