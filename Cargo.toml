@@ -1,7 +1,7 @@
 [package]
 name = "stack-array"
 description = "A maximally-sized array stored on the stack"
-version = "1.2.3"
+version = "1.2.4"
 edition = "2024"
 rust-version = "1.100"
 categories = ["algorithms", "data-structures", "memory-management", "no-std"]
