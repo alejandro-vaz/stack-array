@@ -237,13 +237,11 @@ impl<Type, const N: usize> Array<Type, N> {
         let mut offset = 0;
         for index in (0..self.length).const_into_iter() {
             let mut item = unsafe {self.data[index].assume_init_read()};
-            match (closure(&mut item), offset == 0) {
-                (true, true) => forget(item),
-                (true, false) => {self.data[index - offset].write(item);},
-                (false, _) => {
-                    drop(item);
-                    offset += 1;
-                }
+            if closure(&mut item) {
+                if offset == 0 {forget(item)} else {self.data[index - offset].write(item);}
+            } else {
+                drop(item);
+                offset += 1;
             }
         }
         self.length -= offset;
