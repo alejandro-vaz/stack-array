@@ -65,7 +65,20 @@ const impl<
     }}
 }
 
-//> FROM -> VEC
+//> FROM -> PARTS
+const impl<Type, const N: usize> From<(usize, [MaybeUninit<Type>; N])> for Array<Type, N> {
+    fn from((length, data): (usize, [MaybeUninit<Type>; N])) -> Self {return Array {
+        length: length,
+        data: data
+    }}
+}
+
+
+//^
+//^ TRYFROM
+//^
+
+//> TRYFROM -> VEC
 const impl<Type, const N: usize> TryFrom<Vec<Type>> for Array<Type, N> {
     type Error = CapacityExceeded<N>;
     fn try_from(value: Vec<Type>) -> Result<Self, Self::Error> {
@@ -82,14 +95,6 @@ const impl<Type, const N: usize> TryFrom<Vec<Type>> for Array<Type, N> {
         }
         return Ok(array);
     }
-}
-
-//> FROM -> PARTS
-const impl<Type, const N: usize> From<(usize, [MaybeUninit<Type>; N])> for Array<Type, N> {
-    fn from((length, data): (usize, [MaybeUninit<Type>; N])) -> Self {return Array {
-        length: length,
-        data: data
-    }}
 }
 
 
