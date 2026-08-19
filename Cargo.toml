@@ -3,7 +3,7 @@ name = "stack-array"
 description = "A maximally-sized array stored on the stack"
 version = "1.2.3"
 edition = "2024"
-rust-version = "1.99"
+rust-version = "1.100"
 categories = ["algorithms", "data-structures", "memory-management", "no-std"]
 keywords = ["array", "stack", "stack-array", "collections"]
 repository = "https://github.com/alejandro-vaz/stack-array"
@@ -24,6 +24,7 @@ path = "tests.rs"
 
 [dependencies]
 constrangeiter = "0.0"
+smallvec = "1.15.2"
 
 [dev-dependencies]
 criterion = "0.8"

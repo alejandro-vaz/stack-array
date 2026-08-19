@@ -25,6 +25,9 @@ use criterion::{
 //> HEAD -> ARRAYVEC
 use arrayvec::ArrayVec;
 
+//> HEAD -> SMALLVEC
+use smallvec::SmallVec;
+
 
 //^
 //^ BENCHES
@@ -61,6 +64,15 @@ fn benches(criterion: &mut Criterion) -> () {
     group.bench_function("arrayvec", |bencher| bencher.iter(|| for _ in 0..ITERATIONS {
         competitor.push(black_box(0));
         let x = black_box(competitor.pop());
+        black_box(x);
+    }));
+    let mut smallvec = SmallVec::<[u8; 10]>::new();
+    smallvec.push(1);
+    smallvec.push(2);
+    smallvec.push(3);
+    group.bench_function("smallvec", |bencher| bencher.iter(|| for _ in 0..ITERATIONS {
+        smallvec.push(black_box(0));
+        let x = black_box(smallvec.pop());
         black_box(x);
     }));
     group.bench_function("insertremove", |bencher| bencher.iter(|| for _ in 0..ITERATIONS {
