@@ -16,6 +16,207 @@ use stack_array::Array;
 //^ TESTS
 //^
 
+//> TESTS -> LEN
+#[test]
+fn len() -> () {
+    let mut new = Array::<u8, 6>::new();
+    assert_eq!(new.len(), 0);
+    new.extend([1, 2, 3]);
+    assert_eq!(new.len(), 3);
+}
+
+//> TESTS -> NEW
+#[test]
+fn new() -> () {
+    let new = Array::<u8, 2>::new();
+    assert_eq!(new, []);
+    assert_eq!(new, Array::<u8, 2>::default());
+}
+
+//> TESTS -> IS_FULL
+#[test]
+fn is_full() -> () {
+    let mut new = Array::<u8, 2>::default();
+    assert!(!new.is_full());
+    new.push(1);
+    assert!(!new.is_full());
+    new.push(2);
+    assert!(new.is_full());
+}
+
+//> TESTS -> REPEAT
+#[test]
+fn repeat() -> () {
+    let def = Array::<u8, 3>::from([1, 2]);
+    assert_eq!(def.clone().repeat::<0>(), []);
+    assert_eq!(def.clone().repeat::<1>(), def);
+    assert_eq!(def.clone().repeat::<3>(), [1, 2, 1, 2, 1, 2]);
+}
+
+//> TESTS -> RESIZE
+#[test]
+fn resize() -> () {
+    let def = Array::<u8, 3>::from([1, 2]);
+    assert_eq!(def.clone().resize::<4>(), def);
+    assert_eq!(def.clone().resize::<3>(), def);
+    assert_eq!(def.clone().resize::<2>(), def);
+    assert_eq!(def.clone().resize::<1>(), [1]);
+}
+
+//> TESTS -> DIVIDE
+#[test]
+fn divide() -> () {
+    let def = Array::<u8, 8>::from([1, 2, 3, 4, 5]);
+    assert_eq!(def.clone().divide::<5>().0, def);
+    assert_eq!(def.clone().divide::<5>().1, []);
+    assert_eq!(def.clone().divide::<3>().0, [1, 2, 3]);
+    assert_eq!(def.clone().divide::<3>().1, [4, 5]);
+}
+
+//> TESTS -> JOIN
+#[test]
+fn join() -> () {
+    let first = Array::<u8, 4>::from([1, 2, 3]);
+    let empty = Array::<u8, 2>::default();
+    let second = Array::<u8, 6>::from([1, 2, 3, 4, 5]);
+    assert_eq!(first.clone().join(empty.clone()), first);
+    assert_eq!(first.clone().join(second.clone()), [1, 2, 3, 1, 2, 3, 4, 5]);
+    assert_eq!(empty.join(second.clone()), second);
+}
+
+//> TESTS -> PUSH
+#[test]
+#[should_panic]
+fn push() -> () {
+    let mut new = Array::<u8, 3>::from([1, 2]);
+    assert_eq!(new.len(), 2);
+    new.push(3);
+    assert_eq!(new.len(), 3);
+    assert_eq!(new.last(), Some(&3));
+    new.push(4);
+}
+
+//> TESTS -> PUSH_MUT
+#[test]
+fn push_mut() -> () {
+    let mut new = Array::<u8, 3>::from([1, 2]);
+    let reference = new.push_mut(3);
+    assert_eq!(reference, &3);
+}
+
+//> TESTS -> POP
+#[test]
+fn pop() -> () {
+    let mut new = Array::<u8, 1>::default();
+    assert_eq!(new.pop(), None);
+    assert_eq!(new.len(), 0);
+    new.push(1);
+    assert_eq!(new.len(), 1);
+    assert_eq!(new.pop(), Some(1));
+    assert_eq!(new.len(), 0);
+}
+
+//> TESTS -> POP_IF
+#[test]
+fn pop_if() -> () {
+    let mut new = Array::<u8, 3>::from([1, 2]);
+    assert_eq!(new.len(), 2);
+    assert_eq!(new.pop_if(|_| false), None);
+    assert_eq!(new.len(), 2);
+    assert_eq!(new.pop_if(|last| last.is_power_of_two()), Some(2));
+    assert_eq!(new.len(), 1);
+}
+
+//> TESTS -> CLEAR
+#[test]
+fn clear() -> () {
+    let mut new = Array::<u8, 3>::from([1, 2]);
+    assert_eq!(new.len(), 2);
+    new.clear();
+    assert_eq!(new.len(), 0);
+}
+
+//> TESTS -> TRUNCATE
+#[test]
+fn truncate() -> () {
+    let mut new = Array::<u8, 3>::from([1, 2]);
+    new.truncate(6);
+    assert_eq!(new, [1, 2]);
+    new.truncate(1);
+    assert_eq!(new, [1]);
+}
+
+//> TESTS -> INSERT
+#[test]
+#[should_panic]
+fn insert() -> () {
+    let mut new = Array::<u8, 3>::from([1, 2]);
+    new.insert(1, 0);
+    assert_eq!(new, [1, 0, 2]);
+    assert_eq!(new.len(), 3);
+    new.insert(0, 0);
+}
+
+//> TESTS -> INSERT_MUT
+#[test]
+fn insert_mut() -> () {
+    let mut new = Array::<u8, 3>::from([1, 2]);
+    let reference = new.insert_mut(1, 0);
+    assert_eq!(reference, &0);
+}
+
+//> TESTS -> REMOVE
+#[test]
+#[should_panic]
+fn remove() -> () {
+    let mut new = Array::<u8, 3>::from([1, 2]);
+    assert_eq!(new.remove(0), 1);
+    assert_eq!(new.len(), 1);
+    assert_eq!(new[0], 2);
+    new.remove(4);
+}
+
+//> TESTS -> SWAP_REMOVE
+#[test]
+#[should_panic]
+fn swap_remove() -> () {
+    let mut new = Array::<u8, 6>::from([1, 2, 3, 4, 5]);
+    assert_eq!(new.swap_remove(1), 2);
+    assert_eq!(new.len(), 4);
+    assert_eq!(new[1], 5);
+    new = Array::from([1]);
+    assert_eq!(new.swap_remove(0), 1);
+    assert_eq!(new.len(), 0);
+    new.swap_remove(5);
+}
+
+//> TESTS -> RETAIN
+#[test]
+fn retain() -> () {
+    let mut new = Array::<u8, 6>::from([1, 2, 3, 4, 5]);
+    new.retain(|number| number.is_power_of_two());
+    assert_eq!(new, [1, 2, 4]);
+    assert_eq!(new.len(), 3);
+}
+
+//> TESTS -> DEDUP
+#[test]
+fn dedup() -> () {
+    let mut new = Array::<u8, 12>::from([1, 2, 2, 3, 4, 5, 7, 7, 1, 2, 3, 3]);
+    new.dedup();
+    assert_eq!(new, [1, 2, 3, 4, 5, 7, 1, 2, 3]);
+    assert_eq!(new.len(), 9);
+}
+
+//> TESTS -> DRAIN
+#[test]
+fn drain() -> () {
+    let mut new = Array::<u8, 6>::from([1, 2, 3, 4, 5]);
+    let drain = new.drain(1..3);
+    assert_eq!(new, [1, 4, 5]);
+    assert_eq!(drain, [2, 3]);
+}
+
 //> TESTS -> PUSHPOP
 #[test]
 fn pushpop() -> () {
@@ -49,7 +250,7 @@ fn nonepop() -> () {
 
 //> TESTS -> LEN
 #[test]
-fn len() -> () {
+fn lens() -> () {
     let mut new = Array::<u8, 5>::new();
     new.push(0);
     new.push(1);
@@ -62,7 +263,7 @@ fn len() -> () {
 
 //> TESTS -> CLEAR
 #[test]
-fn clear() -> () {
+fn clears() -> () {
     let mut new = Array::<u8, 5>::from([1, 2, 3]);
     new.clear();
     assert_eq!(new.len(), 0);
@@ -127,7 +328,7 @@ fn ord() -> () {
 
 //> TESTS -> INSERT
 #[test]
-fn insert() -> () {
+fn inserts() -> () {
     let mut array = Array::<u8, 6>::from([1, 2, 3]);
     array.insert(0, 0);
     assert_eq!(array.as_ref(), [0, 1, 2, 3]);
@@ -155,7 +356,7 @@ fn insertnocap() -> () {
 
 //> TESTS -> REMOVE
 #[test]
-fn remove() -> () {
+fn removes() -> () {
     let mut array = Array::<u8, 3>::from([1, 2, 3]);
     array.remove(1);
     assert_eq!(array.as_ref(), [1, 3]);
@@ -228,7 +429,7 @@ fn mutables() -> () {
 
 //> TESTS -> RETAIN
 #[test]
-fn retain() -> () {
+fn retains() -> () {
     let mut array = Array::<u8, 7>::from([1, 2, 3, 4, 5, 6]);
     array.retain(|value| value.is_power_of_two());
     assert_eq!(array.as_ref(), &[1, 2, 4]);
@@ -243,7 +444,7 @@ fn indexto() -> () {
 
 //> TESTS -> DEDUP
 #[test]
-fn dedup() -> () {
+fn dedups() -> () {
     let mut array = Array::<u8, 10>::from([0, 4, 1, 2, 3, 0, 0, 3]);
     array.sort();
     array.dedup();
@@ -262,7 +463,7 @@ fn swapremove() -> () {
 
 //> TESTS -> REPEAT
 #[test]
-fn repeat() -> () {
+fn repeats() -> () {
     let array = Array::<u8, 7>::from([1, 2, 3]);
     let double = array.repeat::<2>();
     assert_eq!(double, [1, 2, 3, 1, 2, 3]);
@@ -274,7 +475,7 @@ fn repeat() -> () {
 
 //> TESTS -> RESIZE
 #[test]
-fn resize() -> () {
+fn resizes() -> () {
     let array = Array::<u8, 7>::from([1, 2, 3]);
     let same = array.resize::<4>();
     assert_eq!(same, [1, 2, 3]);
@@ -284,7 +485,7 @@ fn resize() -> () {
 
 //> TESTS -> DRAIN
 #[test]
-fn drain() -> () {
+fn drains() -> () {
     let mut array = Array::<u8, 10>::from([0, 4, 1, 2, 3, 0, 0, 3]);
     let subarray = array.drain(2..=5);
     assert_eq!(subarray, [1, 2, 3, 0]);
@@ -301,7 +502,7 @@ fn drain() -> () {
 
 //> TESTS -> DIVIDE
 #[test]
-fn divide() -> () {
+fn divides() -> () {
     let array = Array::<u8, 10>::from([0, 4, 1, 2, 3, 0, 0, 3]);
     let (first, second) = array.divide::<4>();
     assert_eq!(first, [0, 4, 1, 2]);
@@ -316,7 +517,7 @@ fn divide() -> () {
 
 //> TESTS -> JOIN
 #[test]
-fn join() -> () {
+fn joins() -> () {
     let first = Array::<u8, 3>::from([1, 2, 3]);
     let second = Array::<u8, 7>::from([0, 1]);
     let third = first.join(second);

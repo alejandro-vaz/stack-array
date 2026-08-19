@@ -16,7 +16,6 @@
 #![feature(const_destruct)]
 #![feature(const_drop_in_place)]
 #![feature(const_array)]
-#![feature(const_try)]
 #![feature(transmute_neo)]
 #![feature(const_index)]
 #![feature(const_range)]
@@ -63,7 +62,8 @@ use core::{
     }, 
     array::from_fn as arrayfn,
     ptr::copy,
-    hint::unreachable_unchecked
+    hint::unreachable_unchecked,
+    ptr::read
 };
 
 //> HEAD -> CONSTRANGEITER
@@ -172,20 +172,25 @@ impl<Type, const N: usize> Array<Type, N> {
         self.length += 1;
         return reference;
     }
-    pub const fn pop(&mut self) -> Option<Type> {return if self.length == 0 {None} else {
-        self.length -= 1;
-        Some(unsafe {self.data[self.length].assume_init_read()})
-    }}
+    pub const fn pop(&mut self) -> Option<Type> {return self.pop_if(const |_| true)}
     pub const fn pop_if(
         &mut self,
         decider: impl [const] FnOnce(&mut Type) -> bool + [const] Destruct
-    ) -> Option<Type> {return if decider(self.last_mut()?) {self.pop()} else {None}}
+    ) -> Option<Type> {return if self.length == 0 {None} else {
+        let last = unsafe {self.data[self.length - 1].assume_init_mut()};
+        if decider(last) {
+            self.length -= 1;
+            Some(unsafe {read(last as *const Type)})
+        } else {
+            None
+        }
+    }}
     pub const fn clear(&mut self) -> () where Type: [const] Destruct {self.truncate(0)}
     pub const fn truncate(&mut self, length: usize) -> () where Type: [const] Destruct {
         for index in (length..self.length).const_into_iter() {
             unsafe {self.data.get_unchecked_mut(index).assume_init_drop()};
         }
-        self.length = length;
+        self.length = length.min(self.length);
     }
     #[track_caller]
     pub const fn insert(&mut self, index: usize, value: Type) -> () {

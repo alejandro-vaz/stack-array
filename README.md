@@ -25,7 +25,7 @@ The `Array` type exposes an API similar to that of `Vec` with common functions:
 - `.swap_remove(usize) -> Type`,
 - `.retain(impl FnMut(&mut Type) -> bool) -> ()`,
 - `.dedup() -> ()`,
-- `.dedup_by(impl FnMut(&mut Type, &mut Type) -> bool) -> ()`,
+- `.dedup_with(impl FnMut(&mut Type, &mut Type) -> bool) -> ()`,
 - `.dedup_by_key<K: PartialEq>(impl FnMut(&mut Type) -> K) -> ()`,
 - `.drain(impl RangeBounds<usize>) -> Self`
 
