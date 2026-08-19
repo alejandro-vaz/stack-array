@@ -224,7 +224,7 @@ impl<Type, const N: usize> Array<Type, N> {
     }
     #[track_caller]
     pub const fn swap_remove(&mut self, index: usize) -> Type {
-        assert!(index < self.length - 1, "tried to remove out of bounds");
+        assert!(index <= self.length - 1, "tried to remove out of bounds");
         let value = unsafe {self.data[index].assume_init_read()};
         self.data.swap(index, self.length - 1);
         self.length -= 1;
