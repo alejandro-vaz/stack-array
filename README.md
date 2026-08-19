@@ -56,7 +56,7 @@ static ARRAY: Array<u8, 6> = const {
 `Array` is stack-allocated, which means it does not make use of any allocator and maintains items inlined on the runtime stack or in the program memory.
 
 | | `Array` | `Vec` | `ArrayVec` | `SmallVec` |
-|:-|:-|:-|:-|
+|:-|:-|:-|:-|:-|
 | `pushpop` | 845M/s | 818M/s | 826M/s | 244M/s |
 
 > Iterations per second, measured with `rustc 1.100.0-nightly (e71c0f1e3 2026-08-18)` on a MacBook M4.
