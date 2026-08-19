@@ -250,9 +250,7 @@ impl<Type, const N: usize> Array<Type, N> {
         &mut self
     ) -> () where Type: [const] PartialEq<Type> + [const] Destruct {self.dedup_by_key_with(
         const |element| element as *const Type,
-        const |first, second| {
-            unsafe {first.as_ref()}.unwrap() == unsafe {second.as_ref()}.unwrap()
-        }
+        const |first, second| unsafe {first.as_ref_unchecked() == second.as_ref_unchecked()}
     )}
     pub const fn dedup_with(
         &mut self,
@@ -286,8 +284,8 @@ impl<Type, const N: usize> Array<Type, N> {
             let current = unsafe {self.data[index].assume_init_mut()};
             let mut key = transformation(current);
             if decider(&mut previous, &mut key) {
-                unsafe {(current as *mut Type).drop_in_place()};
                 drop(key);
+                unsafe {(current as *mut Type).drop_in_place()};
                 offset += 1;
             } else {
                 previous = key;
@@ -381,7 +379,7 @@ const impl<Type: [const] Clone, const N: usize> Clone for Array<Type, N> {
     fn clone(&self) -> Self {return Array {
         length: self.length,
         data: arrayfn(const |index| if index >= self.length {MaybeUninit::uninit()} else {
-            MaybeUninit::new(unsafe {self.data[index].assume_init_ref().clone()})
+            MaybeUninit::new(unsafe {self.data[index].assume_init_ref()}.clone())
         })
     }}
 }
