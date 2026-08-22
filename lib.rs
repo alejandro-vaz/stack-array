@@ -190,7 +190,7 @@ impl<Type, const N: usize> Array<Type, N> {
         for index in (length..self.length).const_into_iter() {
             unsafe {self.data.get_unchecked_mut(index).assume_init_drop()};
         }
-        self.length = length.min(self.length);
+        if length < self.length {self.length = length}
     }
     #[track_caller]
     pub const fn insert(&mut self, index: usize, value: Type) -> () {

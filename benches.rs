@@ -19,7 +19,9 @@ use criterion::{
     Criterion,
     criterion_group,
     criterion_main,
-    Throughput
+    Throughput,
+    BenchmarkGroup,
+    measurement::WallTime
 };
 
 //> HEAD -> ARRAYVEC
@@ -39,49 +41,94 @@ criterion_main!(stack_array);
 
 //> BENCHES -> RUN
 fn benches(criterion: &mut Criterion) -> () {
-    let mut group = criterion.benchmark_group("stack-array");
-    const ITERATIONS: usize = 10000;
-    group.throughput(Throughput::Elements(ITERATIONS as u64));
-    let mut array = Array::<u8, 10>::from([1, 2, 3]);
-    group.bench_function("pushpop", |bencher| bencher.iter(|| for _ in 0..ITERATIONS {
-        array.push(black_box(0));
-        let x = black_box(array.pop());
-        black_box(x);
-    }));
-    let mut vector = Vec::with_capacity(10);
-    vector.push(1);
-    vector.push(2);
-    vector.push(3);
-    group.bench_function("veccomparison", |bencher| bencher.iter(|| for _ in 0..ITERATIONS {
-        vector.push(black_box(0));
-        let x = black_box(vector.pop());
-        black_box(x);
-    }));
-    let mut competitor = ArrayVec::<u8, 10>::new();
-    competitor.push(1);
-    competitor.push(2);
-    competitor.push(3);
-    group.bench_function("arrayvec", |bencher| bencher.iter(|| for _ in 0..ITERATIONS {
-        competitor.push(black_box(0));
-        let x = black_box(competitor.pop());
-        black_box(x);
-    }));
-    let mut smallvec = SmallVec::<[u8; 10]>::new();
-    smallvec.push(1);
-    smallvec.push(2);
-    smallvec.push(3);
-    group.bench_function("smallvec", |bencher| bencher.iter(|| for _ in 0..ITERATIONS {
-        smallvec.push(black_box(0));
-        let x = black_box(smallvec.pop());
-        black_box(x);
-    }));
-    group.bench_function("insertremove", |bencher| bencher.iter(|| for _ in 0..ITERATIONS {
-        array.insert(black_box(0), black_box(0));
-        let x = array.remove(black_box(0));
-        black_box(x);
-    }));
-    group.bench_function("extendclear", |bencher| bencher.iter(|| for _ in 0..ITERATIONS {
-        array.extend(black_box([1, 2, 3, 4, 5]));
-        array.clear();
-    }));
+    push(criterion.benchmark_group("push"));
+    pushpop(criterion.benchmark_group("pushpop"));
+}
+
+//> BENCHES -> PUSH
+fn push(mut group: BenchmarkGroup<'_, WallTime>) -> () {
+    const SIZE: usize = 2usize.pow(16);
+    group.throughput(Throughput::Bytes(SIZE as u64 * 8));
+    group.bench_function("array", |bencher| {
+        let mut array = Array::<usize, SIZE>::default();
+        bencher.iter(|| {
+            for index in 0..SIZE {
+                array.push(black_box(index));
+            }
+            array.clear();
+        }
+    )});
+    group.bench_function("arrayvec", |bencher| {
+        let mut arrayvec = ArrayVec::<usize, SIZE>::default();
+        bencher.iter(|| {
+            for index in 0..SIZE {
+                arrayvec.push(black_box(index));
+            }
+            arrayvec.clear();
+        }
+    )});
+    group.bench_function("smallvec", |bencher| {
+        let mut smallvec = SmallVec::<[usize; SIZE]>::default();
+        bencher.iter(|| {
+            for index in 0..SIZE {
+                smallvec.push(black_box(index));
+            }
+            smallvec.clear();
+        }
+    )});
+    group.bench_function("vec", |bencher| {
+        let mut vec = Vec::<usize>::with_capacity(SIZE);
+        bencher.iter(|| {
+            for index in 0..SIZE {
+                vec.push(black_box(index));
+            }
+            vec.clear();
+        }
+    )});
+}
+
+//> BENCHES -> PUSHPOP
+fn pushpop(mut group: BenchmarkGroup<'_, WallTime>) {
+    const SIZE: usize = 2usize.pow(16);
+    group.throughput(Throughput::Bytes(SIZE as u64 * 8));
+    group.bench_function("array", |bencher| {
+        let mut array = Array::<usize, 1>::default();
+        bencher.iter(|| {
+            for index in 0..SIZE {
+                array.push(black_box(index));
+                black_box(array.pop());
+            }
+            array.clear();
+        }
+    )});
+    group.bench_function("arrayvec", |bencher| {
+        let mut arrayvec = ArrayVec::<usize, 1>::default();
+        bencher.iter(|| {
+            for index in 0..SIZE {
+                arrayvec.push(black_box(index));
+                black_box(arrayvec.pop());
+            }
+            arrayvec.clear();
+        }
+    )});
+    group.bench_function("smallvec", |bencher| {
+        let mut smallvec = SmallVec::<[usize; 1]>::default();
+        bencher.iter(|| {
+            for index in 0..SIZE {
+                smallvec.push(black_box(index));
+                black_box(smallvec.pop());
+            }
+            smallvec.clear();
+        }
+    )});
+    group.bench_function("vec", |bencher| {
+        let mut vec = Vec::<usize>::with_capacity(1);
+        bencher.iter(|| {
+            for index in 0..SIZE {
+                vec.push(black_box(index));
+                black_box(vec.pop());
+            }
+            vec.clear();
+        }
+    )});
 }

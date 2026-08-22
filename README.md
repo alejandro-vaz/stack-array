@@ -57,7 +57,7 @@ static ARRAY: Array<u8, 6> = const {
 
 | | `Array` | `Vec` | `ArrayVec` | `SmallVec` |
 |:-|:-|:-|:-|:-|
-| `pushpop` | 845M/s | 818M/s | 826M/s | 244M/s |
+| `pushpop` | 866M/s | 827M/s | 830M/s | 260M/s |
 
 > Iterations per second, measured with `rustc 1.100.0-nightly (e71c0f1e3 2026-08-18)` on a MacBook M4.
 
