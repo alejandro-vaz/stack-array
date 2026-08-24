@@ -2,24 +2,18 @@
 //^ HEAD
 //^
 
-//> HEAD -> SUPER
-use super::Array;
-
-//> HEAD -> CORE
-use core::{
-    hash::{
-        Hash,
-        Hasher
-    },
-    cmp::Ordering
+//> HEAD -> IMPORTS
+use {
+    super::Array,
+    core::cmp::Ordering
 };
 
 
 //^
-//^ COMPARISONS
+//^ EQ
 //^
 
-//> COMPARISONS -> EQ
+//> EQ -> PARTIAL CONTAINER
 const impl<
     Type: [const] PartialEq<Type>, 
     To: [const] AsRef<[Type]>, 
@@ -28,7 +22,15 @@ const impl<
     fn eq(&self, other: &To) -> bool {return self.as_ref().eq(other.as_ref())}
 }
 
-//> COMPARISONS -> ORD
+//> EQ -> TOTAL
+const impl<Type: [const] Eq, const N: usize> Eq for Array<Type, N> {}
+
+
+//^
+//^ CMP
+//^
+
+//> CMP -> PARTIAL CONTAINER
 const impl<
     Type: [const] PartialOrd<Type>, 
     To: [const] AsRef<[Type]>, 
@@ -39,17 +41,7 @@ const impl<
     }
 }
 
-//> COMPARISONS -> HASH
-impl<Type: Hash, const N: usize> Hash for Array<Type, N> {
-    fn hash<Hashing: Hasher>(&self, state: &mut Hashing) {
-        return Hash::hash(self.as_ref(), state);
-    }
-}
-
-//> COMPARISONS -> TOTAL EQ
-const impl<Type: [const] Eq, const N: usize> Eq for Array<Type, N> {}
-
-//> COMPARISONS -> TOTAL ORD
+//> CMP -> TOTAL
 const impl<Type: [const] Ord, const N: usize> Ord for Array<Type, N> {
     fn cmp(&self, other: &Self) -> Ordering {return self.as_ref().cmp(other.as_ref())}
 }

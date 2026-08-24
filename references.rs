@@ -2,22 +2,22 @@
 //^ HEAD
 //^
 
-//> HEAD -> SUPER
-use super::Array;
-
-//> HEAD -> CORE
-use core::{
-    slice::{
-        from_raw_parts as fat,
-        from_raw_parts_mut as mutfat
-    },
-    borrow::{
-        Borrow,
-        BorrowMut
-    },
-    ops::{
-        Deref,
-        DerefMut
+//> HEAD -> IMPORTS
+use {
+    super::Array,
+    core::{
+        slice::{
+            from_raw_parts as fat,
+            from_raw_parts_mut as mutfat
+        },
+        borrow::{
+            Borrow,
+            BorrowMut
+        },
+        ops::{
+            Deref,
+            DerefMut
+        }
     }
 };
 

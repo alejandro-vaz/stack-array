@@ -2,30 +2,26 @@
 //^ HEAD
 //^
 
-//> HEAD -> SUPER
-use super::{
-    Array,
-    errors::{
-        UnmatchedCapacity,
-        CapacityExceeded
-    }
-};
-
-//> HEAD -> ALLOC
-use alloc::vec::Vec;
-
-//> HEAD -> CONSTRANGEITER
-use constrangeiter::ConstIntoIterator;
-
-//> HEAD -> CORE
-use core::{
-    mem::{
-        MaybeUninit,
-        transmute_neo as transmute,
-        forget
+//> HEAD -> IMPORTS
+use {
+    super::{
+        Array,
+        errors::{
+            UnmatchedCapacity,
+            CapacityExceeded
+        }
     },
-    array::from_fn as arrayfn,
-    marker::Destruct
+    alloc::vec::Vec,
+    constrangeiter::ConstIntoIterator,
+    core::{
+        mem::{
+            MaybeUninit,
+            transmute_neo as transmute,
+            forget
+        },
+        array::from_fn as arrayfn,
+        marker::Destruct
+    }
 };
 
 

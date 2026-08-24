@@ -8,27 +8,21 @@
 //> HEAD -> FEATURES
 #![feature(generic_const_exprs)]
 
-//> HEAD -> SUPER
-use stack_array::Array;
-
-//> HEAD -> CORE
-use core::hint::black_box;
-
-//> HEAD -> CRITERION
-use criterion::{
-    Criterion,
-    criterion_group,
-    criterion_main,
-    Throughput,
-    BenchmarkGroup,
-    measurement::WallTime
+//> HEAD -> IMPORTS
+use {
+    stack_array::Array,
+    core::hint::black_box,
+    criterion::{
+        Criterion,
+        criterion_group,
+        criterion_main,
+        Throughput,
+        BenchmarkGroup,
+        measurement::WallTime
+    },
+    arrayvec::ArrayVec,
+    smallvec::SmallVec
 };
-
-//> HEAD -> ARRAYVEC
-use arrayvec::ArrayVec;
-
-//> HEAD -> SMALLVEC
-use smallvec::SmallVec;
 
 
 //^

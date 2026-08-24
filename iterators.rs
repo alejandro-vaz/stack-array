@@ -2,23 +2,23 @@
 //^ HEAD
 //^
 
-//> HEAD -> SUPER
-use super::Array;
-
-//> HEAD -> CORE
-use core::{
-    mem::MaybeUninit,
-    slice::{
-        Iter,
-        IterMut
-    },
-    iter::{
-        ExactSizeIterator,
-        DoubleEndedIterator,
-        FusedIterator,
-        TrustedLen
-    },
-    marker::Destruct
+//> HEAD -> IMPORTS
+use {
+    super::Array,
+    core::{
+        mem::MaybeUninit,
+        slice::{
+            Iter,
+            IterMut
+        },
+        iter::{
+            ExactSizeIterator,
+            DoubleEndedIterator,
+            FusedIterator,
+            TrustedLen
+        },
+        marker::Destruct
+    }
 };
 
 

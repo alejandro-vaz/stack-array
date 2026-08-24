@@ -5,7 +5,7 @@
 //> HEAD -> NO_STD
 #![no_std]
 
-//> HEAD -> DOCS
+//> HEAD -> DOC
 #![doc = include_str!("README.md")]
 
 //> HEAD -> LINTS
@@ -42,34 +42,40 @@ mod errors;
 mod iterators;
 mod references;
 
-//> HEAD -> CORE
-use core::{
-    fmt::{
-        Debug,
-        Formatter,
-        Result as Format
-    }, 
-    marker::Destruct, 
-    mem::{
-        MaybeUninit,
-        forget,
-        transmute_neo as transmute
-    }, 
-    ops::{
-        Bound, 
-        Drop, 
-        RangeBounds
-    }, 
-    array::from_fn as arrayfn,
-    ptr::copy,
-    hint::unreachable_unchecked,
-    ptr::read
+//> HEAD -> IMPORTS
+use {
+    core::{
+        fmt::{
+            Debug,
+            Formatter,
+            Result as Format
+        },
+        marker::Destruct,
+        mem::{
+            MaybeUninit,
+            forget,
+            transmute_neo as transmute
+        },
+        ops::{
+            Bound,
+            Drop,
+            RangeBounds
+        },
+        array::from_fn as arrayfn,
+        ptr::{
+            copy,
+            read
+        },
+        hint::unreachable_unchecked,
+        hash::{
+            Hash,
+            Hasher
+        }
+    },
+    constrangeiter::ConstIntoIterator
 };
 
-//> HEAD -> CONSTRANGEITER
-use constrangeiter::ConstIntoIterator;
-
-//> HEAD -> ERRORS
+//> HEAD -> EXPORTS
 pub use errors::{
     CapacityExceeded,
     UnmatchedCapacity
@@ -395,4 +401,11 @@ const impl<Type, const N: usize> Default for Array<Type, N> {
         data: MaybeUninit::uninit().transpose(),
         length: 0
     }}
+}
+
+//> ARRAY -> HASH
+impl<Type: Hash, const N: usize> Hash for Array<Type, N> {
+    fn hash<Hashing: Hasher>(&self, state: &mut Hashing) {
+        return Hash::hash(self.as_ref(), state);
+    }
 }

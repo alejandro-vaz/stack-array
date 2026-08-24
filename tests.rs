@@ -8,7 +8,7 @@
 //> HEAD -> FEATURES
 #![feature(generic_const_exprs)]
 
-//> HEAD -> STACK_ARRAY
+//> HEAD -> IMPORTS
 use stack_array::Array;
 
 
